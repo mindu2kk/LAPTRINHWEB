@@ -1,41 +1,31 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
+const API_BASE = "http://localhost:8080";
+
 export default function Post() {
   const { slug } = useParams();
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    // Truyền slug động vào link API CodeSandbox của bạn
-    fetch(`https://nhwxn9-8080.csb.app/api/posts/${slug}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Post not found");
-        return res.json();
-      })
-      .then((data) => {
-        setPost(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setPost(null);
-        setLoading(false);
-      });
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/post/${slug}`);
+        const result = await response.json();
+        setPost(result);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, [slug]);
 
-  if (loading) {
-    return <span>Loading post details...</span>;
-  }
-
-  if (!post) {
-    return <span>The blog post you've requested doesn't exist.</span>;
-  }
+  const { title, description } = post;
 
   return (
     <div style={{ padding: 20 }}>
-      <h3>{post.title}</h3>
-      <p>{post.description}</p>
+      <h3>{title}</h3>
+      <p>{description}</p>
     </div>
   );
 }

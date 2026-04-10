@@ -1,11 +1,6 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
 
-function Stats({ user }) {
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
+function Stats() {
   return (
     <div style={{ padding: 20 }}>
       <h2>Stats View</h2>

@@ -1,23 +1,41 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+const API_BASE = "http://localhost:8080";
+
 export default function PostLists() {
-  const [posts, setPosts] = useState({});
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Sử dụng link API CodeSandbox của bạn thay vì localhost
-    fetch("https://nhwxn9-8080.csb.app/api/posts")
-      .then((res) => res.json())
-      .then((data) => setPosts(data))
-      .catch((err) => console.error("Failed to fetch posts:", err));
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/posts`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const result = await response.json();
+        setData(result);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("An error occurred while fetching the data.");
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <ul>
-      {Object.entries(posts).map(([slug, { title }]) => (
-        <li key={slug}>
-          <Link to={`/posts/${slug}`}>
-            <h3>{title}</h3>
+      {data.map((d) => (
+        <li key={d.slug}>
+          <Link to={`/posts/${d.slug}`}>
+            <h3>{d.title}</h3>
           </Link>
         </li>
       ))}

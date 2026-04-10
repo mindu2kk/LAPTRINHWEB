@@ -4,6 +4,8 @@
     ],
     "compilerOptions": {
         "strict": true,
+        "noImplicitAny": false,
+        "allowJs": true,
         "esModuleInterop": true,
         "lib": [
             "dom",

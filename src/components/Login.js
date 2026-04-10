@@ -1,19 +1,34 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE = "http://localhost:8080";
+
 function Login({ onLogin }) {
   const [creds, setCreds] = useState({});
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  function handleLogin() {
-    // Chỉ dùng để demo [cite: 272]
-    if (creds.username === "admin" && creds.password === "123") {
-      onLogin && onLogin({ username: creds.username });
-      navigate("/stats");
-    } else {
-      alert("Sai tài khoản hoặc mật khẩu!");
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/login`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(creds),
+      });
+      if (response.ok) {
+        onLogin && onLogin({ username: creds.username });
+        navigate("/stats");
+      } else {
+        setError("Invalid username or password!");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Login failed!");
     }
-  }
+  };
 
   return (
     <div style={{ padding: 10 }}>
@@ -34,6 +49,7 @@ function Login({ onLogin }) {
       <br />
       <br />
       <button onClick={handleLogin}>Login</button>
+      <p style={{ color: "red" }}>{error}</p>
     </div>
   );
 }
