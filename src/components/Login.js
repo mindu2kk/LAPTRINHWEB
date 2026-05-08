@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
 
 function Login({ onLogin }) {
   const [creds, setCreds] = useState({});
@@ -9,6 +9,7 @@ function Login({ onLogin }) {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    console.log("Attempting login with:", creds); // Debug log
     try {
       const response = await fetch(`${API_BASE}/api/login`, {
         method: "post",
@@ -18,10 +19,13 @@ function Login({ onLogin }) {
         },
         body: JSON.stringify(creds),
       });
+      console.log("Response status:", response.status); // Debug log
       if (response.ok) {
         onLogin && onLogin({ username: creds.username });
         navigate("/stats");
       } else {
+        const errorData = await response.json();
+        console.log("Error response:", errorData); // Debug log
         setError("Invalid username or password!");
       }
     } catch (error) {

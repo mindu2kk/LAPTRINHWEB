@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
 
 function NewPost() {
   const [newPost, setNewPost] = useState("");
